@@ -1,14 +1,10 @@
 import os
-import pytest
-from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.alert import Alert
 
-BASE_URL = "http://127.0.0.1:5000"
-TEST_USERNAME = "user1"
-TEST_PASSWORD = "123"
 SAMPLE_IMAGE_PATH = os.path.abspath("tests/Funny_dogs_2.jpg")
 
 def dismiss_any_alert(driver, timeout=3):
@@ -26,31 +22,16 @@ def safe_get(driver, url):
     dismiss_any_alert(driver)
 
 
-@pytest.fixture
-def driver():
-    """Set up a headless Edge browser for each test."""
-    options = webdriver.EdgeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")  # important for interactability
-
-    driver = webdriver.Edge(options=options)
-    driver.implicitly_wait(5)
-    yield driver
-    driver.quit()
-
-
-def login(driver):
+def login(driver, base_url, selenium_user):
     """Helper function to log in the test user."""
-    driver.get(f"{BASE_URL}/login.html")
+    driver.get(f"{base_url}/login.html")
 
     WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located((By.ID, "login-username"))
     )
 
-    driver.find_element(By.ID, "login-username").send_keys(TEST_USERNAME)
-    driver.find_element(By.ID, "login-password").send_keys(TEST_PASSWORD)
+    driver.find_element(By.ID, "login-username").send_keys(selenium_user.username)
+    driver.find_element(By.ID, "login-password").send_keys("TestPassword123")
     driver.find_element(By.CSS_SELECTOR, "#login-form button[type='submit']").click()
 
     # Handle the "Logged in successfully" alert
@@ -103,7 +84,7 @@ def fill_checkin_form(driver, include_location=True):
         )
 
         map_element = driver.find_element(By.ID, "map-picker")
-        action = webdriver.ActionChains(driver)
+        action = ActionChains(driver)
         action.move_to_element(map_element).click().perform()
 
         WebDriverWait(driver, 5).until(
@@ -116,14 +97,25 @@ def js_click(driver, element):
     driver.execute_script("arguments[0].scrollIntoView(true);", element)
     driver.execute_script("arguments[0].click();", element)
 
+
+def click_submit_button(driver):
+    """Submit through the form button while avoiding viewport interception."""
+    submit_button = driver.find_element(
+        By.CSS_SELECTOR, "#checkin-form button[type='submit']"
+    )
+    driver.execute_script(
+        "arguments[0].scrollIntoView({block: 'center'});", submit_button
+    )
+    driver.execute_script("arguments[0].click();", submit_button)
+
 # ------------------------------------------------------------------ #
 # Selenium Test 1: Submit new checkin form successfully                #
 # ------------------------------------------------------------------ #
 class TestCheckinFormSubmit:
 
-    def test_submit_checkin_form_successfully(self, driver):
-        login(driver)
-        safe_get(driver, f"{BASE_URL}/new-checkin.html")
+    def test_submit_checkin_form_successfully(self, driver, base_url, selenium_user):
+        login(driver, base_url, selenium_user)
+        safe_get(driver, f"{base_url}/new-checkin.html")
         fill_checkin_form(driver, include_location=True)
 
         # Set lat/lng directly via JavaScript to bypass JS validation
@@ -133,18 +125,13 @@ class TestCheckinFormSubmit:
             document.getElementById('rating-value').value = '4';
         """)
 
-        # Submit the form directly via JavaScript, bypassing JS validation
-        driver.execute_script("document.getElementById('checkin-form').submit();")
-
-        import time
-        time.sleep(2)  # wait for redirect
-        print(f"\nURL after submit: {driver.current_url}")
+        click_submit_button(driver)
 
         WebDriverWait(driver, 10).until(
             lambda d: "new-checkin" not in d.current_url
         )
 
-        assert driver.current_url == f"{BASE_URL}/" or "/index" in driver.current_url
+        assert driver.current_url == f"{base_url}/" or "/index" in driver.current_url
 
 
 # ------------------------------------------------------------------ #
@@ -152,14 +139,14 @@ class TestCheckinFormSubmit:
 # ------------------------------------------------------------------ #
 class TestCheckinDelete:
 
-    def test_delete_checkin_from_profile(self, driver):
+    def test_delete_checkin_from_profile(self, driver, base_url, selenium_user):
         """
         A logged-in user should be able to delete their own checkin
         from the profile page and it should no longer appear.
         """
         # First create a checkin to delete
-        login(driver)
-        safe_get(driver, f"{BASE_URL}/new-checkin.html")
+        login(driver, base_url, selenium_user)
+        safe_get(driver, f"{base_url}/new-checkin.html")
         fill_checkin_form(driver, include_location=True)
 
         driver.execute_script("""
@@ -168,7 +155,7 @@ class TestCheckinDelete:
             document.getElementById('rating-value').value = '4';
         """)
 
-        driver.execute_script("document.getElementById('checkin-form').submit();")
+        click_submit_button(driver)
 
         # Wait for redirect to home page after checkin created
         WebDriverWait(driver, 10).until(
@@ -176,7 +163,7 @@ class TestCheckinDelete:
         )
 
         # Navigate to profile page
-        safe_get(driver, f"{BASE_URL}/profile.html")
+        safe_get(driver, f"{base_url}/profile.html")
 
         # Wait for profile page to load
         WebDriverWait(driver, 5).until(

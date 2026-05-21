@@ -16,6 +16,20 @@
 -->
 {% include "navbar.html" %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-2">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+  
+
 
 <!-- HERO MAP SECTION -->
 <section class="hero-map-section">
@@ -92,25 +106,18 @@
     {% endif %}
   })
 
-  document.getElementById("new_checkin").addEventListener("click", (e) => {
-    {% if not current_user.is_authenticated %}
-      e.preventDefault()
-      // display the notification
-      const modal = new bootstrap.Modal(document.getElementById("login_modal"));
-      modal.show()
-    {% endif %}
-  })
+  const newCheckinBtn = document.getElementById("new_checkin");
+  if (newCheckinBtn) {
+    newCheckinBtn.addEventListener("click", (e) => {
+      {% if not current_user.is_authenticated %}
+        e.preventDefault();
+        const modal = new bootstrap.Modal(document.getElementById("login_modal"));
+        modal.show();
+      {% endif %}
+    });
+  }
 </script>
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-    <script>
-      alert("{{ message }}");
-    </script>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
 
 </body>
 </html>

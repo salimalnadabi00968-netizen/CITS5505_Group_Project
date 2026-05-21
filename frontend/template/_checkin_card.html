@@ -25,6 +25,11 @@
         {{ category_labels.get(category_key, category | title) }}
       </span>
       <h5 class="card-title">{{ check_in.title }}</h5>
+      {% if check_in.place_name %}
+        <div class="checkin-place small text-muted mb-1">
+          {{ check_in.place_name }}
+        </div>
+      {% endif %}
       <div class="mb-1">
         {% if check_in.rating is not none %}
           <span class="rating-num">{{ "%.1f" | format(check_in.rating) }}</span>

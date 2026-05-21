@@ -51,8 +51,7 @@
   opacity: 0;
   transition: opacity 0.2s;
 }
-
-.avatar-hover-text:hover {
+#avatar_label:hover .avatar-hover-text {
   opacity: 1;
 }
 

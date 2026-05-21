@@ -80,6 +80,11 @@
           {{ check_in.title }}
           <span class="place-category cat-{{ category_key }}">{{ category_label }}</span>
         </h1>
+        {% if check_in.place_name %}
+          <p class="place-name mb-1">
+            <i class="bi bi-geo-alt me-1"></i>{{ check_in.place_name }}
+          </p>
+        {% endif %}
         <p class="place-rating mb-0">
           {% if check_in.rating is not none %}
             Rating: {{ "%.1f" | format(check_in.rating) }} / 5
@@ -126,9 +131,7 @@
             <i class="bi bi-heart me-1"></i>Favourite
           </a>
           {% endif %}
-          <button type="button" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-share me-1"></i>Share
-          </button>
+          {# Share action is hidden until a real sharing flow is implemented. #}
         </div>
       </div>
 
@@ -223,6 +226,10 @@
           <li class="info-row d-flex justify-content-between py-1 border-bottom">
             <span class="text-muted">Category</span>
             <span class="cat-{{ category_key }}">{{ category_label }}</span>
+          </li>
+          <li class="info-row d-flex justify-content-between py-1 border-bottom">
+            <span class="text-muted">Place</span>
+            <span>{{ check_in.place_name or "Not provided" }}</span>
           </li>
           <li class="info-row d-flex justify-content-between py-1 border-bottom">
             <span class="text-muted">Rating</span>

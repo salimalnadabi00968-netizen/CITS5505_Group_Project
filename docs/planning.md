@@ -4,14 +4,13 @@
 
 ---
 
-## Team Responsibilities
+## Team
 
-| Member                | UWA ID   | GitHub           | Responsibilities |
-|-----------------------|----------|------------------|------------------|
-| Zhiqiang Meng         | 24133154 | Michael-24133154 |                  |
-| Prathish Vijaya Kumar | 25086027 | prat4677         |                  |
-|                       |          |                  |                  |
-|                       |          |                  |                  |
+| Member                | UWA ID   | GitHub           |
+|-----------------------|----------|------------------|
+| Zhiqiang Meng         | 24133154 | Michael-24133154 |
+| Prathish Vijaya Kumar | 25086027 | prat4677         |
+| Zhichao Liu           | 24665878 | Ironman1231      |
 
 ---
 
@@ -23,6 +22,9 @@
 | 2026-03-23 | Confirm main pages, user stories, and overall frontend direction |
 | 2026-04-16 | Review frontend prototype progress and refine page structure     |
 | 2026-04-17 | Review current prototype completion and discuss next plan        |
+| 2026-04-28 | Backend implementation review and frontend bug identification    |
+| 2026-05-10 | Test coverage review and final fixes discussion                  |
+| 2026-05-15 | Final review before submission                                   |
 
 ---
 

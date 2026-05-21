@@ -48,13 +48,14 @@ class CheckIn(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    place_name = db.Column(db.String(128))
     title = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text)
-    category = db.Column(db.String(64))
+    category = db.Column(db.String(64), index=True)
     rating = db.Column(db.Float)
     lat = db.Column(db.Float, nullable=False)
     lng = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=utc_now)
+    created_at = db.Column(db.DateTime, default=utc_now, index=True)
 
     photos = db.relationship("Photo", backref="checkin", lazy="dynamic", cascade="all, delete-orphan")
     comments = db.relationship("Comment", backref="checkin", lazy="dynamic", cascade="all, delete-orphan")

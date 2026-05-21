@@ -113,12 +113,13 @@ def upload_image(file, filename):
 ## 9. Test Your Connection
 Run the test script to verify your setup:
 ```bash
-python test_r2.py
+python3 tests/test_r2.py
 ```
 
 You should see:
 ```
-Upload successful!
+Upload successful: https://...
+Delete successful
 ```
 
 ---

@@ -18,6 +18,18 @@
 -->
 {% include "navbar.html" %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-2">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
 <!-- Page header -->
 <div class="bg-white border-bottom py-4">
@@ -46,8 +58,8 @@
               <i class="bi bi-geo-alt me-1 text-green"></i>Place Name
             </label>
             <div class="input-group">
-              <input type="text" class="form-control" id="place-name"
-                     placeholder="e.g. Matilda Bay, Kings Park..." required />
+              <input type="text" class="form-control" id="place-name" name="place_name"
+                              placeholder="e.g. Matilda Bay, Kings Park..." required />
               <button class="btn btn-outline-secondary" type="button" id="pick-on-map">
                 <i class="bi bi-map me-1"></i>Pick on Map
               </button>
@@ -136,7 +148,7 @@
 
           <!-- Submit -->
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a href="explore.html" class="btn btn-outline-secondary px-4">Cancel</a>
+            <a href="{{ url_for('explore') }}" class="btn btn-outline-secondary px-4">Cancel</a>
             <button type="submit" class="btn btn-pp px-5">
               <i class="bi bi-send me-1"></i>Publish Check-in
             </button>
@@ -319,12 +331,12 @@
   document.getElementById('checkin-form').addEventListener('submit', function (e) {
     e.preventDefault();
     const inputs = this.querySelectorAll('[required]');
-    inputs.forEach(input => {
+    for (const input of inputs) {
         if (input.value === '') {
             alert(`${input.name} is required`);
             return;
         }
-    });
+    }
 
     const lat = document.getElementById('lat_input').value;
     const lng = document.getElementById('lng_input').value;
@@ -348,18 +360,6 @@
     this.submit();
   });
 
-  // {% if login_status == False %}
-  //   const modal = new bootstrap.Modal(document.getElementById("login_modal"));
-  //   modal.show()
-  // {% endif %}
-
-  // {% with messages = get_flashed_messages() %}
-  //   {% if messages %}
-  //     {% for message in messages %}
-  //       alert("{{ message }}");
-  //     {% endfor %}
-  //   {% endif %}
-  // {% endwith %}
 </script>
 
 {% if login_status == False %}
@@ -368,16 +368,6 @@
   modal.show()
 </script>
 {% endif %}
-
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-    <script>
-      alert("{{ message }}");
-    </script>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
 
 </body>
 </html>
